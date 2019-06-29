@@ -335,4 +335,13 @@ class DeserializationSpec extends Specification {
     result.every { it instanceof Id }
   }
 
+  def 'an error is thrown if there is content remaining after parsing'() {
+    when:
+    json.parse("[1,2] here is some extra text!")
+
+    then:
+    def ex = thrown MalformedJsonException
+    ex.message.contains "Additional characters were found after parsing"
+  }
+
 }

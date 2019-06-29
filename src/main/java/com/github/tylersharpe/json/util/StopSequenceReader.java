@@ -12,6 +12,7 @@ public class StopSequenceReader implements Closeable {
 
   private Reader reader;
   private int lastIndexRead = -1;
+  private boolean endOfStreamReached;
   private Deque<Character> backReadQueue = new ArrayDeque<>();
 
   public StopSequenceReader(Reader reader) {
@@ -47,6 +48,9 @@ public class StopSequenceReader implements Closeable {
 
     while (true) {
       char next = nextCharacter();
+      if (endOfStreamReached) {
+        throw new EOFException("Encountered end of stream while reading for one of " + stops);
+      }
       if (stops.contains(next) && !escaping) {
         if (!consumeStop) {
           backRead(next);
@@ -72,6 +76,9 @@ public class StopSequenceReader implements Closeable {
     int nextMatchIndex = 0;
     while (true) {
       char next = nextCharacter();
+      if (endOfStreamReached) {
+        throw new EOFException("Encountered end of stream while reading for sequence '" + stopSequence + "'");
+      }
       result.append(next);
 
       if (next == stopSequence.charAt(nextMatchIndex)) {
@@ -98,9 +105,12 @@ public class StopSequenceReader implements Closeable {
   }
 
   private char doRead() throws IOException {
+    if (endOfStreamReached) {
+      return (char) -1;
+    }
     int next = reader.read();
     if (next == -1) {
-      throw new EOFException("Encountered premature end of stream");
+      endOfStreamReached = true;
     }
     lastIndexRead++;
     return (char) next;

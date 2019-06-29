@@ -54,7 +54,7 @@ public class JavaType<C> {
   }
 
   public Optional<Type> getGenericType(int index) {
-    if (index >= genericTypes.size()) {
+    if (genericTypes == null || index >= genericTypes.size()) {
       return Optional.empty();
     }
     return Optional.of(genericTypes.get(index));

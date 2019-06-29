@@ -87,7 +87,9 @@ public class Json implements SerializationContext {
 
   public Object parse(InputStream input, Type bindType) throws IOException {
     var jsonReader = new JsonReader(input, this);
-    return jsonReader.readType(bindType);
+    Object parsedObject = jsonReader.readType(bindType);
+    jsonReader.assertStreamFullyConsumed();
+    return parsedObject;
   }
 
   public String serialize(Object obj) throws IOException {

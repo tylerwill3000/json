@@ -217,6 +217,13 @@ public class JsonReader implements Closeable {
     lastTokenRead = token;
   }
 
+  void assertStreamFullyConsumed() throws IOException {
+    consumeWhitespaceAndComments();
+    if (reader.peek() != (char) -1) {
+      throw createMalformedJsonException("Additional characters were found after parsing main JSON");
+    }
+  }
+
   public JsonToken peek() throws IOException {
     consumeWhitespaceAndComments();
 

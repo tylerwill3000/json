@@ -2,12 +2,10 @@
 
 This is a lightweight library to serialize and de-serialize JSON to and from java objects.
 
-I made this purely for fun and for the challenge; obviously, a real application should use [Jackson](https://github.com/FasterXML/jackson) or [GSON](https://github.com/google/gson).
-
 # Features
 - No external dependencies
 - Supports serialization and deserialization of arbitrarily complex generic signatures (e.g. `List<Map<URL, String>>`)
-- Speed on par with both GSON and Jackson. The library is SLIGHTLY slower on deserialization, but the slowdown can only be seen when reading tens of thousands of objects
+- Speed on par with both [GSON](https://github.com/google/gson) and [Jackson](https://github.com/FasterXML/jackson). The library is SLIGHTLY slower on deserialization, but the slowdown can only be seen when reading tens of thousands of objects
 - Detection of cyclic references
 - Ability to support single line and multi-line comments when parsing
 - Ability to serialize and deserialize interfaces and abstract classes

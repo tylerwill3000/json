@@ -46,7 +46,7 @@ public class JsonWriter implements Closeable, Flushable {
 
   @SuppressWarnings("unchecked")
   public void writeValue(Object obj, Type objType) throws IOException {
-    Class rawType = JavaType.from(objType).getRawType();
+    Class rawType = objType instanceof Class ? (Class) objType : JavaType.from(objType).getRawType();
 
     JsonAdapter adapter = this.serializationContext.getAdapter(rawType);
     if (adapter == null) {

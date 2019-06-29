@@ -23,7 +23,7 @@ public class BooleanAdapter implements JsonAdapter<Boolean> {
 
   @Override
   public Boolean readObject(JsonReader jsonReader, JavaType<? extends Boolean> type) throws IOException {
-    return jsonReader.readBoolean() ? Boolean.TRUE : Boolean.FALSE;
+    return jsonReader.readBoolean();
   }
 
 }

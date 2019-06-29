@@ -57,9 +57,12 @@ public class CollectionAdapter implements JsonAdapter<Collection> {
       return new HashSet();
     } else if (Queue.class.isAssignableFrom(clazz)) {
       return new ArrayDeque();
-    } else {
-      return new ArrayList();
     }
+
+    if (!clazz.isAssignableFrom(ArrayList.class)) {
+      throw new JsonBindException("Unknown collection type: " + clazz);
+    }
+    return new ArrayList();
   }
 
 }
