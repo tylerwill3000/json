@@ -45,16 +45,15 @@ public class MapAdapter implements JsonAdapter<Map> {
     Type keyType = mapType.getGenericType(0)
             .map(type -> {
               if (type instanceof WildcardType) {
-                Type upperBoundType = ((WildcardType) type).getUpperBounds()[0];
-                return upperBoundType == Object.class ? String.class : upperBoundType;
-              } else {
-                return type;
+                Type boundType = JavaType.parseBoundType((WildcardType) type);
+                return boundType == Object.class ? String.class : boundType;
               }
+              return type;
             })
             .orElse(String.class);
 
     Type valueType = mapType.getGenericType(1)
-            .map(type -> type instanceof WildcardType ? ((WildcardType) type).getUpperBounds()[0] : type)
+            .map(type -> type instanceof WildcardType ? JavaType.parseBoundType((WildcardType) type) : type)
             .orElse(Object.class);
 
     Map map = instantiateMap(mapType.getRawType());

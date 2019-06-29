@@ -324,4 +324,15 @@ class DeserializationSpec extends Specification {
     result.every { it instanceof Id }
   }
 
+  def 'reading a wildcard type that has a concrete lower bound class should read items as the lower bound class'() {
+    given:
+    Type listOfIdType = new TypeToken<List<? super Id>>(){}.type
+
+    when:
+    def result = json.parse('[{"id":1},{"id":2}]', listOfIdType)
+
+    then:
+    result.every { it instanceof Id }
+  }
+
 }

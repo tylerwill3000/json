@@ -3,6 +3,7 @@ package com.github.tylersharpe.json.util;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,18 @@ public class JavaType<C> {
       return Optional.empty();
     }
     return Optional.of(genericTypes.get(index));
+  }
+
+  /**
+   * Checks the upper / lower bounds of the given wildcard type to see if there is a more
+   * specific bound type than Object. If not, just returns Object.
+   */
+  public static Type parseBoundType(WildcardType wildcardType) {
+    Type upperBoundType = wildcardType.getUpperBounds()[0];
+    if (upperBoundType != Object.class) {
+      return upperBoundType;
+    }
+     return wildcardType.getLowerBounds()[0];
   }
 
 }
