@@ -106,12 +106,12 @@ var json = new Json();
 json.registerAdapter(Person.class, new JsonAdapter<>() {
   
    @Override
-   public void writeObject(JsonWriter jsonWriter, Person person, SerializationContext context) throws IOException {
+   public void writeObject(JsonWriter jsonWriter, Person person) throws IOException {
      jsonWriter.writeString(person.name + "|" + person.age);
    }
 
    @Override
-   public Person readObject(JsonReader jsonReader, JavaType<? extends Person> type, SerializationContext context) throws IOException {
+   public Person readObject(JsonReader jsonReader, JavaType<? extends Person> type) throws IOException {
      String personSplit = jsonReader.readString().split("\\|");
      String name = personSplit[0];
      int age = Integer.parseInt(personSplit[1]);
