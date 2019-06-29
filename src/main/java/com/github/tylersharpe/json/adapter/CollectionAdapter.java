@@ -34,7 +34,7 @@ public class CollectionAdapter implements JsonAdapter<Collection> {
   @SuppressWarnings({"unchecked", "SimplifyOptionalCallChains"})
   public Collection readObject(JsonReader reader, JavaType<? extends Collection> collectionType) throws IOException {
     Type itemType = collectionType.getGenericType(0)
-            .map(type -> type instanceof WildcardType ? Object.class : type)
+            .map(type -> type instanceof WildcardType ? ((WildcardType) type).getUpperBounds()[0] : type)
             .orElse(Object.class);
 
     var collection = instantiateCollection(collectionType.getRawType());

@@ -3,6 +3,7 @@ package com.github.tylersharpe.json.objectbuilder;
 import com.github.tylersharpe.json.JsonBindException;
 import com.github.tylersharpe.json.JsonReader;
 import com.github.tylersharpe.json.adapter.JsonAdapter;
+import com.github.tylersharpe.json.adapter.TypeMetadataAdapter;
 import com.github.tylersharpe.json.annotation.JsonConstructor;
 import com.github.tylersharpe.json.annotation.JsonIgnoreExtraFields;
 import com.github.tylersharpe.json.annotation.JsonProperty;
@@ -12,6 +13,7 @@ import com.github.tylersharpe.json.util.SingletonCache;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -36,6 +38,13 @@ public interface ObjectBuilder<T> {
 
   @SuppressWarnings("unchecked")
   static <T> ObjectBuilder<T> newObjectBuilder(Class<T> klass) {
+    if (klass.isInterface() || Modifier.isAbstract(klass.getModifiers())) {
+      throw new JsonBindException(
+          "Cannot directly instantiate " + klass + " since it is an abstract class or an interface. " +
+          "If you intend to deserialize instances of this type, consider using " + TypeMetadataAdapter.class.getName()
+      );
+    }
+
     Supplier<ObjectBuilder> builderSupplier = OBJECT_BUILDER_CACHE.computeIfAbsent(klass, rawType -> {
       for (var constructor : rawType.getDeclaredConstructors()) {
         if (constructor.isAnnotationPresent(JsonConstructor.class)) {

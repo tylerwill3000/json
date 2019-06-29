@@ -40,10 +40,22 @@ public class MapAdapter implements JsonAdapter<Map> {
   }
 
   @Override
-  @SuppressWarnings({"unchecked", "SimplifyOptionalCallChains"})
+  @SuppressWarnings("unchecked")
   public Map<?, ?> readObject(JsonReader reader, JavaType<? extends Map> mapType) throws IOException {
-    Type keyType = mapType.getGenericType(0).map(type -> type instanceof WildcardType ? String.class : type).orElse(String.class);
-    Type valueType = mapType.getGenericType(1).map(type -> type instanceof WildcardType ? Object.class : type).orElse(Object.class);
+    Type keyType = mapType.getGenericType(0)
+            .map(type -> {
+              if (type instanceof WildcardType) {
+                Type upperBoundType = ((WildcardType) type).getUpperBounds()[0];
+                return upperBoundType == Object.class ? String.class : upperBoundType;
+              } else {
+                return type;
+              }
+            })
+            .orElse(String.class);
+
+    Type valueType = mapType.getGenericType(1)
+            .map(type -> type instanceof WildcardType ? ((WildcardType) type).getUpperBounds()[0] : type)
+            .orElse(Object.class);
 
     Map map = instantiateMap(mapType.getRawType());
 

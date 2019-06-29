@@ -258,6 +258,16 @@ class DeserializationSpec extends Specification {
     moviesList.every { it instanceof URL }
   }
 
+  static interface Greeter {}
+  def 'an error is thrown when trying to parse an interface type and no explicit adapter is registered'() {
+    when:
+    json.parse('{"name":"Bobby"}', Greeter)
+
+    then:
+    def ex = thrown(JsonBindException)
+    ex.message.contains "Cannot directly instantiate $Greeter"
+  }
+
   def 'single line comments can be ignored'() {
     given:
     json.allowComments = true
@@ -301,6 +311,17 @@ class DeserializationSpec extends Specification {
 
     expect:
     json.parse(jsonStr) == [prop: 'value']
+  }
+
+  def 'reading a wildcard type that has a concrete upper bound class should read items as the upper bound class'() {
+    given:
+    Type listOfIdType = new TypeToken<List<? extends Id>>(){}.type
+
+    when:
+    def result = json.parse('[{"id":1},{"id":2}]', listOfIdType)
+
+    then:
+    result.every { it instanceof Id }
   }
 
 }
