@@ -33,7 +33,7 @@ public class ArrayAdapter implements JsonAdapter<Object> {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"unchecked", "rawtypes"})
   public Object readObject(JsonReader reader, JavaType<?> type) throws IOException {
     Class arrayItemType = type.getRawType().getComponentType();
 
@@ -49,6 +49,7 @@ public class ArrayAdapter implements JsonAdapter<Object> {
     }
   }
 
+  @SuppressWarnings("rawtypes")
   private void fillPrimitiveArray(List list, Object primitiveArray) {
     for (int i = 0; i < list.size(); i++) {
       Array.set(primitiveArray, i, list.get(i));

@@ -59,7 +59,14 @@ public class NumberAdapter implements JsonAdapter<Number> {
       return new AtomicLong(jsonReader.readLong());
 
     } else {
-      return jsonReader.readNumber();
+      Number genericNumberValue = jsonReader.readNumber();
+      if (!numberType.isInstance(genericNumberValue)) {
+        throw new JsonBindException(
+          "Parsed generic number '" + genericNumberValue + "' (of type: " + genericNumberValue.getClass().getName() + "), " +
+          "but cannot assign to required type " + numberType.getName()
+        );
+      }
+      return genericNumberValue;
     }
   }
 

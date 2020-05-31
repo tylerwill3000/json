@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class JavaType<C> {
 
   private static final Map<Type, JavaType<?>> CACHE = new HashMap<>();
@@ -24,12 +25,10 @@ public class JavaType<C> {
     this.genericTypes = genericTypes;
   }
 
-  @SuppressWarnings("unchecked")
   public static <C> JavaType<C> from(Type type) {
     return (JavaType<C>) CACHE.computeIfAbsent(type, JavaType::create);
   }
 
-  @SuppressWarnings("unchecked")
   private static JavaType create(Type type) {
     if (type instanceof Class) {
       return new JavaType((Class) type, List.of());

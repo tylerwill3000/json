@@ -11,6 +11,7 @@ import java.lang.reflect.Type;
 import java.lang.reflect.WildcardType;
 import java.util.*;
 
+@SuppressWarnings("rawtypes")
 public class CollectionAdapter implements JsonAdapter<Collection> {
 
   private static final JsonAdapter<Collection> INSTANCE = new CollectionAdapter().nullSafe();

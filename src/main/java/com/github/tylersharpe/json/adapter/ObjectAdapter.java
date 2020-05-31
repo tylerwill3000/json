@@ -17,6 +17,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Map;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class ObjectAdapter implements JsonAdapter<Object> {
 
   private static final JsonAdapter<Object> INSTANCE = new ObjectAdapter().nullSafe();
@@ -27,7 +28,6 @@ public class ObjectAdapter implements JsonAdapter<Object> {
 
   private ObjectAdapter() {}
 
-  @SuppressWarnings("unchecked")
   @Override
   public void writeObject(JsonWriter jsonWriter, Object obj) throws IOException {
     jsonWriter.writeStartObject(obj);
@@ -35,7 +35,11 @@ public class ObjectAdapter implements JsonAdapter<Object> {
     for (Class clazz = obj.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
       for (Field field : clazz.getDeclaredFields()) {
 
-        if (Modifier.isStatic(field.getModifiers()) || Modifier.isTransient(field.getModifiers()) || field.isSynthetic() || field.isAnnotationPresent(JsonIgnore.class)) {
+        if (Modifier.isStatic(field.getModifiers())
+            || Modifier.isTransient(field.getModifiers())
+            || field.isSynthetic()
+            || field.isAnnotationPresent(JsonIgnore.class))
+        {
           continue;
         }
 
@@ -70,26 +74,20 @@ public class ObjectAdapter implements JsonAdapter<Object> {
   @Override
   public Object readObject(JsonReader reader, JavaType<?> type) throws IOException {
     if (type.getRawType() == Object.class) {
-
       JsonToken nextToken = reader.peek();
-      switch (nextToken) {
-        case QUOTE:
-          return reader.readString();
-        case START_OBJECT:
-          return MapAdapter.getInstance().readObject(reader, JavaType.from(Map.class));
-        case START_ARRAY:
-          return CollectionAdapter.getInstance().readObject(reader, JavaType.from(Collection.class));
-        case NULL:
+
+      return switch(nextToken) {
+        case QUOTE        -> reader.readString();
+        case START_OBJECT -> MapAdapter.getInstance().readObject(reader, JavaType.from(Map.class));
+        case START_ARRAY  -> CollectionAdapter.getInstance().readObject(reader, JavaType.from(Collection.class));
+        case TRUE, FALSE  -> reader.readBoolean();
+        case NUMBER       -> NumberAdapter.getInstance().readObject(reader, JavaType.from(Number.class));
+        case NULL         -> {
           reader.readNull();
-          return null;
-        case TRUE:
-        case FALSE:
-          return reader.readBoolean();
-        case NUMBER:
-          return NumberAdapter.getInstance().readObject(reader, JavaType.from(Number.class));
-        default:
-          throw reader.createMalformedJsonException("Cannot read a new element starting from token " + nextToken);
-      }
+          yield null;
+        }
+        default -> throw reader.createMalformedJsonException("Cannot read a new element starting from token " + nextToken);
+      };
     } else {
       ObjectBuilder objectBuilder = ObjectBuilder.newObjectBuilder(type.getRawType());
       reader.iterateNextObject(() -> objectBuilder.accumulateField(reader));

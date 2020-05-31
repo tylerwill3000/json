@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 /**
  * Builds objects field-by-field as entries are visited in a JSON object or array
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public interface ObjectBuilder<T> {
 
   Map<Class, Supplier<ObjectBuilder>> OBJECT_BUILDER_CACHE = new HashMap<>();
@@ -36,7 +37,6 @@ public interface ObjectBuilder<T> {
    */
   T buildObject();
 
-  @SuppressWarnings("unchecked")
   static <T> ObjectBuilder<T> newObjectBuilder(Class<T> klass) {
     if (klass.isInterface() || Modifier.isAbstract(klass.getModifiers())) {
       throw new JsonBindException(
@@ -57,7 +57,6 @@ public interface ObjectBuilder<T> {
     return (ObjectBuilder<T>) builderSupplier.get();
   }
 
-  @SuppressWarnings("unchecked")
   static Object readFieldValue(JsonReader reader, Field field) throws IOException {
     if (field.isAnnotationPresent(JsonSerialization.class)) {
       var adapterClass = field.getAnnotation(JsonSerialization.class).value();

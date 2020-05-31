@@ -6,6 +6,7 @@ import com.github.tylersharpe.json.util.JavaType;
 
 import java.io.IOException;
 
+@SuppressWarnings("rawtypes")
 public class EnumAdapter implements JsonAdapter<Enum> {
 
   private static final JsonAdapter<Enum> INSTANCE = new EnumAdapter().nullSafe();

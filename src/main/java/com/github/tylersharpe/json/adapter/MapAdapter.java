@@ -12,6 +12,7 @@ import java.lang.reflect.WildcardType;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class MapAdapter implements JsonAdapter<Map> {
 
   private static final JsonAdapter<Map> INSTANCE = new MapAdapter().nullSafe();
@@ -22,7 +23,6 @@ public class MapAdapter implements JsonAdapter<Map> {
     return INSTANCE;
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public void writeObject(JsonWriter jsonWriter, Map map) throws IOException {
     jsonWriter.writeStartObject(map);
@@ -40,7 +40,6 @@ public class MapAdapter implements JsonAdapter<Map> {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Map<?, ?> readObject(JsonReader reader, JavaType<? extends Map> mapType) throws IOException {
     Type keyType = mapType.getGenericType(0)
             .map(type -> {

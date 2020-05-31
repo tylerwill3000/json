@@ -10,6 +10,7 @@ import java.io.IOException;
 /**
  * Adapter which will write implementation metadata to allow interfaces and abstract classes to be serialized
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class TypeMetadataAdapter implements JsonAdapter<Object> {
 
   private static final JsonAdapter<Object> INSTANCE = new TypeMetadataAdapter();
@@ -19,7 +20,6 @@ public class TypeMetadataAdapter implements JsonAdapter<Object> {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public void writeObject(JsonWriter jsonWriter, Object obj) throws IOException {
     if (obj == null) {
       jsonWriter.writeNull();
@@ -40,7 +40,6 @@ public class TypeMetadataAdapter implements JsonAdapter<Object> {
   }
 
   @Override
-  @SuppressWarnings("unchecked")
   public Object readObject(JsonReader jsonReader, JavaType type) throws IOException {
     if (jsonReader.peek() == JsonToken.NULL) {
       jsonReader.readNull();
