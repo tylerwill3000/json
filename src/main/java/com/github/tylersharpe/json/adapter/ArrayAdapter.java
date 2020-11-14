@@ -11,49 +11,50 @@ import java.util.List;
 
 public class ArrayAdapter implements JsonAdapter<Object> {
 
-  private static final JsonAdapter<Object> INSTANCE = new ArrayAdapter().nullSafe();
+    private static final JsonAdapter<Object> INSTANCE = new ArrayAdapter().nullSafe();
 
-  private ArrayAdapter() {}
-
-  public static JsonAdapter<Object> getInstance() {
-    return INSTANCE;
-  }
-
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Object array) throws IOException {
-    jsonWriter.writeStartArray();
-
-    int length = Array.getLength(array);
-    for (int i = 0; i < length; i++) {
-      Object arrayItem = Array.get(array, i);
-      jsonWriter.writeValue(arrayItem);
+    private ArrayAdapter() {
     }
 
-    jsonWriter.writeEndArray();
-  }
-
-  @Override
-  @SuppressWarnings({"unchecked", "rawtypes"})
-  public Object readObject(JsonReader reader, JavaType<?> type) throws IOException {
-    Class arrayItemType = type.getRawType().getComponentType();
-
-    List list = new ArrayList();
-    reader.iterateNextArray(() -> list.add(reader.readClass(arrayItemType)));
-
-    var array = Array.newInstance(arrayItemType, list.size());
-    if (arrayItemType.isPrimitive()) {
-      fillPrimitiveArray(list, array);
-      return array;
-    } else {
-      return list.toArray((Object[]) array);
+    public static JsonAdapter<Object> getInstance() {
+        return INSTANCE;
     }
-  }
 
-  @SuppressWarnings("rawtypes")
-  private void fillPrimitiveArray(List list, Object primitiveArray) {
-    for (int i = 0; i < list.size(); i++) {
-      Array.set(primitiveArray, i, list.get(i));
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Object array) throws IOException {
+        jsonWriter.writeStartArray();
+
+        int length = Array.getLength(array);
+        for (int i = 0; i < length; i++) {
+            Object arrayItem = Array.get(array, i);
+            jsonWriter.writeValue(arrayItem);
+        }
+
+        jsonWriter.writeEndArray();
     }
-  }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Object readObject(JsonReader reader, JavaType<?> type) throws IOException {
+        Class arrayItemType = type.getRawType().getComponentType();
+
+        List list = new ArrayList();
+        reader.iterateNextArray(() -> list.add(reader.readClass(arrayItemType)));
+
+        var array = Array.newInstance(arrayItemType, list.size());
+        if (arrayItemType.isPrimitive()) {
+            fillPrimitiveArray(list, array);
+            return array;
+        } else {
+            return list.toArray((Object[]) array);
+        }
+    }
+
+    @SuppressWarnings("rawtypes")
+    private void fillPrimitiveArray(List list, Object primitiveArray) {
+        for (int i = 0; i < list.size(); i++) {
+            Array.set(primitiveArray, i, list.get(i));
+        }
+    }
 
 }

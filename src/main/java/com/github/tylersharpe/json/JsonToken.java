@@ -4,41 +4,42 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum JsonToken {
-  START_OBJECT('{'),
-  END_OBJECT('}'),
-  START_ARRAY('['),
-  END_ARRAY(']'),
-  QUOTE('"'),
-  COMMA(','),
-  COLON(':'),
-  NULL('n'),
-  TRUE('t'),
-  FALSE('f'),
-  NUMBER(null);
+    START_OBJECT('{'),
+    END_OBJECT('}'),
+    START_ARRAY('['),
+    END_ARRAY(']'),
+    QUOTE('"'),
+    COMMA(','),
+    COLON(':'),
+    NULL('n'),
+    TRUE('t'),
+    FALSE('f'),
+    NUMBER(null);
 
-  private static final Map<Character, JsonToken> INDEX = new HashMap<>();
-  static {
-    for (JsonToken t : values()) {
-      INDEX.put(t.character, t);
-    }
-  }
+    private static final Map<Character, JsonToken> INDEX = new HashMap<>();
 
-  char character;
-  
-  JsonToken(Character character) {
-    if (character != null) {
-      this.character = character;
+    static {
+        for (JsonToken t : values()) {
+            INDEX.put(t.character, t);
+        }
     }
-  }
 
-  public static JsonToken fromCharacter(char theChar) {
-    if (INDEX.containsKey(theChar)) {
-      return INDEX.get(theChar);
+    char character;
+
+    JsonToken(Character character) {
+        if (character != null) {
+            this.character = character;
+        }
     }
-    if (theChar == '-' || theChar == '.' || Character.isDigit(theChar)) {
-      return NUMBER;
+
+    public static JsonToken fromCharacter(char theChar) {
+        if (INDEX.containsKey(theChar)) {
+            return INDEX.get(theChar);
+        }
+        if (theChar == '-' || theChar == '.' || Character.isDigit(theChar)) {
+            return NUMBER;
+        }
+        return null;
     }
-    return null;
-  }
 
 }

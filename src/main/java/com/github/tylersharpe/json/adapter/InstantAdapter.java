@@ -9,22 +9,23 @@ import java.time.Instant;
 
 public class InstantAdapter implements JsonAdapter<Instant> {
 
-  private static final JsonAdapter<Instant> INSTANCE = new InstantAdapter().nullSafe();
+    private static final JsonAdapter<Instant> INSTANCE = new InstantAdapter().nullSafe();
 
-  private InstantAdapter() {}
+    private InstantAdapter() {
+    }
 
-  public static JsonAdapter<Instant> getInstance() {
-    return INSTANCE;
-  }
+    public static JsonAdapter<Instant> getInstance() {
+        return INSTANCE;
+    }
 
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Instant instant) throws IOException {
-    jsonWriter.writeLong(instant.toEpochMilli());
-  }
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Instant instant) throws IOException {
+        jsonWriter.writeLong(instant.toEpochMilli());
+    }
 
-  @Override
-  public Instant readObject(JsonReader reader, JavaType<? extends Instant> type) throws IOException {
-    return Instant.ofEpochMilli(reader.readLong());
-  }
+    @Override
+    public Instant readObject(JsonReader reader, JavaType<? extends Instant> type) throws IOException {
+        return Instant.ofEpochMilli(reader.readLong());
+    }
 
 }

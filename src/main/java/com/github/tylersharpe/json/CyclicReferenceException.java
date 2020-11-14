@@ -5,8 +5,8 @@ package com.github.tylersharpe.json;
  */
 public class CyclicReferenceException extends JsonBindException {
 
-  CyclicReferenceException(String message) {
-    super(message);
-  }
+    CyclicReferenceException(String message) {
+        super(message);
+    }
 
 }

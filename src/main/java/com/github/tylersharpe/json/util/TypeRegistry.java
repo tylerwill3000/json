@@ -16,100 +16,101 @@ import static java.util.stream.Collectors.*;
  */
 public class TypeRegistry<V> {
 
-  private Map<Class<?>, V> registry = new HashMap<>();
-  private Set<Class<?>> mappedSubclasses = new HashSet<>();
+    private Map<Class<?>, V> registry = new HashMap<>();
+    private Set<Class<?>> mappedSubclasses = new HashSet<>();
 
-  public TypeRegistry() {}
-
-  public TypeRegistry(TypeRegistry<V> other) {
-    registry.putAll(other.registry);
-    mappedSubclasses.addAll(other.mappedSubclasses);
-  }
-
-  public TypeRegistry<V> register(final Class<?> clazz, V value) {
-    registry.put(clazz, value);
-
-    Collection<Class<?>> subclassesToRemove = mappedSubclasses.stream().filter(sc -> clazz.isAssignableFrom(sc) && clazz != sc).collect(toList());
-    for (Class<?> subclassToRemove : subclassesToRemove) {
-      mappedSubclasses.remove(subclassToRemove);
-      registry.remove(subclassToRemove);
+    public TypeRegistry() {
     }
 
-    return this;
-  }
-
-  public V get(final Class<?> clazz) {
-    return registry.computeIfAbsent(clazz, this::getForNearestSuperclass);
-  }
-
-  private V getForNearestSuperclass(Class<?> clazz) {
-    mappedSubclasses.add(clazz);
-
-    if (clazz.isArray()) {
-      return registry.get(Object[].class);
+    public TypeRegistry(TypeRegistry<V> other) {
+        registry.putAll(other.registry);
+        mappedSubclasses.addAll(other.mappedSubclasses);
     }
 
-    TreeMap<Integer, List<Class<?>>> superClassesByDistance = registry.keySet()
-            .stream()
-            .filter(mappedClass -> mappedClass.isAssignableFrom(clazz))
-            .collect(groupingBy(superClass -> classDistance(clazz, superClass), TreeMap::new, toList()));
+    public TypeRegistry<V> register(final Class<?> clazz, V value) {
+        registry.put(clazz, value);
 
-    if (!superClassesByDistance.isEmpty()) {
-      List<Class<?>> nearestSuperclasses = superClassesByDistance.entrySet().iterator().next().getValue();
-      nearestSuperclasses.sort(comparing(Class::isInterface));
-      // Object will be ordered before interfaces since Object is a class, but we want interfaces to take precedence over Object
-      Class<?> superclass = nearestSuperclasses.get(0).equals(Object.class) && nearestSuperclasses.size() > 1 ? nearestSuperclasses.get(1) : nearestSuperclasses.get(0);
-      return registry.get(superclass);
-    } else {
-      return null;
-    }
-  }
+        Collection<Class<?>> subclassesToRemove = mappedSubclasses.stream().filter(sc -> clazz.isAssignableFrom(sc) && clazz != sc).collect(toList());
+        for (Class<?> subclassToRemove : subclassesToRemove) {
+            mappedSubclasses.remove(subclassToRemove);
+            registry.remove(subclassToRemove);
+        }
 
-  static int classDistance(Class<?> subClass, Class<?> superClass) {
-    if (subClass == superClass) {
-      return 0;
+        return this;
     }
 
-    if (!superClass.isAssignableFrom(subClass)) {
-      throw new IllegalArgumentException(subClass + " is not a subclass from " + superClass);
+    public V get(final Class<?> clazz) {
+        return registry.computeIfAbsent(clazz, this::getForNearestSuperclass);
     }
 
-    int distance = 0;
-    Queue<Set<Class<?>>> searchQueue = new ArrayDeque<>();
-    searchQueue.add(getSuperAndInterfaces(subClass));
+    private V getForNearestSuperclass(Class<?> clazz) {
+        mappedSubclasses.add(clazz);
 
-    while (!searchQueue.isEmpty()) {
-      Set<Class<?>> currentLevel = searchQueue.poll();
-      distance++;
+        if (clazz.isArray()) {
+            return registry.get(Object[].class);
+        }
 
-      if (currentLevel.contains(superClass)) {
-        break;
-      }
+        TreeMap<Integer, List<Class<?>>> superClassesByDistance = registry.keySet()
+                .stream()
+                .filter(mappedClass -> mappedClass.isAssignableFrom(clazz))
+                .collect(groupingBy(superClass -> classDistance(clazz, superClass), TreeMap::new, toList()));
 
-      Set<Class<?>> nextLevel = currentLevel.stream()
-              .flatMap(clazz -> getSuperAndInterfaces(clazz).stream())
-              .collect(toSet());
-
-      if (!nextLevel.isEmpty()) {
-        searchQueue.add(nextLevel);
-      }
+        if (!superClassesByDistance.isEmpty()) {
+            List<Class<?>> nearestSuperclasses = superClassesByDistance.entrySet().iterator().next().getValue();
+            nearestSuperclasses.sort(comparing(Class::isInterface));
+            // Object will be ordered before interfaces since Object is a class, but we want interfaces to take precedence over Object
+            Class<?> superclass = nearestSuperclasses.get(0).equals(Object.class) && nearestSuperclasses.size() > 1 ? nearestSuperclasses.get(1) : nearestSuperclasses.get(0);
+            return registry.get(superclass);
+        } else {
+            return null;
+        }
     }
 
-    return distance;
-  }
+    static int classDistance(Class<?> subClass, Class<?> superClass) {
+        if (subClass == superClass) {
+            return 0;
+        }
 
-  private static Set<Class<?>> getSuperAndInterfaces(Class<?> clazz) {
-    Set<Class<?>> superAndInterfaces = new HashSet<>();
-    if (clazz.getSuperclass() != null) {
-      superAndInterfaces.add(clazz.getSuperclass());
+        if (!superClass.isAssignableFrom(subClass)) {
+            throw new IllegalArgumentException(subClass + " is not a subclass from " + superClass);
+        }
+
+        int distance = 0;
+        Queue<Set<Class<?>>> searchQueue = new ArrayDeque<>();
+        searchQueue.add(getSuperAndInterfaces(subClass));
+
+        while (!searchQueue.isEmpty()) {
+            Set<Class<?>> currentLevel = searchQueue.poll();
+            distance++;
+
+            if (currentLevel.contains(superClass)) {
+                break;
+            }
+
+            Set<Class<?>> nextLevel = currentLevel.stream()
+                    .flatMap(clazz -> getSuperAndInterfaces(clazz).stream())
+                    .collect(toSet());
+
+            if (!nextLevel.isEmpty()) {
+                searchQueue.add(nextLevel);
+            }
+        }
+
+        return distance;
     }
-    Collections.addAll(superAndInterfaces, clazz.getInterfaces());
-    return superAndInterfaces;
-  }
 
-  @Override
-  public String toString() {
-    return registry.toString();
-  }
+    private static Set<Class<?>> getSuperAndInterfaces(Class<?> clazz) {
+        Set<Class<?>> superAndInterfaces = new HashSet<>();
+        if (clazz.getSuperclass() != null) {
+            superAndInterfaces.add(clazz.getSuperclass());
+        }
+        Collections.addAll(superAndInterfaces, clazz.getInterfaces());
+        return superAndInterfaces;
+    }
+
+    @Override
+    public String toString() {
+        return registry.toString();
+    }
 
 }

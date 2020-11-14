@@ -20,79 +20,79 @@ import java.util.Map;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class ObjectAdapter implements JsonAdapter<Object> {
 
-  private static final JsonAdapter<Object> INSTANCE = new ObjectAdapter().nullSafe();
+    private static final JsonAdapter<Object> INSTANCE = new ObjectAdapter().nullSafe();
 
-  public static JsonAdapter<Object> getInstance() {
-    return INSTANCE;
-  }
+    public static JsonAdapter<Object> getInstance() {
+        return INSTANCE;
+    }
 
-  private ObjectAdapter() {}
+    private ObjectAdapter() {
+    }
 
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Object obj) throws IOException {
-    jsonWriter.writeStartObject(obj);
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Object obj) throws IOException {
+        jsonWriter.writeStartObject(obj);
 
-    for (Class clazz = obj.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
-      for (Field field : clazz.getDeclaredFields()) {
+        for (Class clazz = obj.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
+            for (Field field : clazz.getDeclaredFields()) {
 
-        if (Modifier.isStatic(field.getModifiers())
-            || Modifier.isTransient(field.getModifiers())
-            || field.isSynthetic()
-            || field.isAnnotationPresent(JsonIgnore.class))
-        {
-          continue;
+                if (Modifier.isStatic(field.getModifiers())
+                        || Modifier.isTransient(field.getModifiers())
+                        || field.isSynthetic()
+                        || field.isAnnotationPresent(JsonIgnore.class)) {
+                    continue;
+                }
+
+                Object fieldValue;
+                try {
+                    field.setAccessible(true);
+                    fieldValue = field.get(obj);
+                } catch (IllegalAccessException e) {
+                    throw new JsonBindException(e);
+                }
+
+                if (fieldValue == null && !jsonWriter.getSerializationContext().isSerializeNulls()) {
+                    continue;
+                }
+
+                String fieldName = field.isAnnotationPresent(JsonProperty.class) ? field.getDeclaredAnnotation(JsonProperty.class).value() : field.getName();
+                jsonWriter.writeKey(fieldName);
+
+                JsonSerialization jsonSerialization = field.getAnnotation(JsonSerialization.class);
+                if (jsonSerialization != null) {
+                    JsonAdapter jsonAdapter = SingletonCache.getInstance(jsonSerialization.value());
+                    jsonAdapter.writeObject(jsonWriter, fieldValue);
+                } else {
+                    jsonWriter.writeValue(fieldValue, field.getGenericType());
+                }
+            }
         }
 
-        Object fieldValue;
-        try {
-          field.setAccessible(true);
-          fieldValue = field.get(obj);
-        } catch (IllegalAccessException e) {
-          throw new JsonBindException(e);
-        }
+        jsonWriter.writeEndObject();
+    }
 
-        if (fieldValue == null && !jsonWriter.getSerializationContext().isSerializeNulls()) {
-          continue;
-        }
+    @Override
+    public Object readObject(JsonReader reader, JavaType<?> type) throws IOException {
+        if (type.getRawType() == Object.class) {
+            JsonToken nextToken = reader.peek();
 
-        String fieldName = field.isAnnotationPresent(JsonProperty.class) ? field.getDeclaredAnnotation(JsonProperty.class).value() : field.getName();
-        jsonWriter.writeKey(fieldName);
-
-        JsonSerialization jsonSerialization = field.getAnnotation(JsonSerialization.class);
-        if (jsonSerialization != null) {
-          JsonAdapter jsonAdapter = SingletonCache.getInstance(jsonSerialization.value());
-          jsonAdapter.writeObject(jsonWriter, fieldValue);
+            return switch (nextToken) {
+                case QUOTE -> reader.readString();
+                case START_OBJECT -> MapAdapter.getInstance().readObject(reader, JavaType.from(Map.class));
+                case START_ARRAY -> CollectionAdapter.getInstance().readObject(reader, JavaType.from(Collection.class));
+                case TRUE, FALSE -> reader.readBoolean();
+                case NUMBER -> NumberAdapter.getInstance().readObject(reader, JavaType.from(Number.class));
+                case NULL -> {
+                    reader.readNull();
+                    yield null;
+                }
+                default -> throw reader.createMalformedJsonException("Cannot read a new element starting from token " + nextToken);
+            };
         } else {
-          jsonWriter.writeValue(fieldValue, field.getGenericType());
+            ObjectBuilder objectBuilder = ObjectBuilder.newObjectBuilder(type.getRawType());
+            reader.iterateNextObject(() -> objectBuilder.accumulateField(reader));
+            return objectBuilder.buildObject();
         }
-      }
     }
-
-    jsonWriter.writeEndObject();
-  }
-
-  @Override
-  public Object readObject(JsonReader reader, JavaType<?> type) throws IOException {
-    if (type.getRawType() == Object.class) {
-      JsonToken nextToken = reader.peek();
-
-      return switch(nextToken) {
-        case QUOTE        -> reader.readString();
-        case START_OBJECT -> MapAdapter.getInstance().readObject(reader, JavaType.from(Map.class));
-        case START_ARRAY  -> CollectionAdapter.getInstance().readObject(reader, JavaType.from(Collection.class));
-        case TRUE, FALSE  -> reader.readBoolean();
-        case NUMBER       -> NumberAdapter.getInstance().readObject(reader, JavaType.from(Number.class));
-        case NULL         -> {
-          reader.readNull();
-          yield null;
-        }
-        default -> throw reader.createMalformedJsonException("Cannot read a new element starting from token " + nextToken);
-      };
-    } else {
-      ObjectBuilder objectBuilder = ObjectBuilder.newObjectBuilder(type.getRawType());
-      reader.iterateNextObject(() -> objectBuilder.accumulateField(reader));
-      return objectBuilder.buildObject();
-    }
-  }
 
 }

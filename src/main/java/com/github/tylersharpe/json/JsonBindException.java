@@ -5,16 +5,16 @@ package com.github.tylersharpe.json;
  */
 public class JsonBindException extends RuntimeException {
 
-  public JsonBindException(String message) {
-    super(message);
-  }
+    public JsonBindException(String message) {
+        super(message);
+    }
 
-  public JsonBindException(Throwable e) {
-    super(e);
-  }
+    public JsonBindException(Throwable e) {
+        super(e);
+    }
 
-  public JsonBindException(String message, Throwable e) {
-    super(message, e);
-  }
+    public JsonBindException(String message, Throwable e) {
+        super(message, e);
+    }
 
 }

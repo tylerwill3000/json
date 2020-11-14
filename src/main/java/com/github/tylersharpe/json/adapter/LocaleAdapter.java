@@ -9,22 +9,23 @@ import java.util.Locale;
 
 public class LocaleAdapter implements JsonAdapter<Locale> {
 
-  private static final JsonAdapter<Locale> INSTANCE = new LocaleAdapter().nullSafe();
+    private static final JsonAdapter<Locale> INSTANCE = new LocaleAdapter().nullSafe();
 
-  private LocaleAdapter() {}
+    private LocaleAdapter() {
+    }
 
-  public static JsonAdapter<Locale> getInstance() {
-    return INSTANCE;
-  }
+    public static JsonAdapter<Locale> getInstance() {
+        return INSTANCE;
+    }
 
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Locale locale) throws IOException {
-    jsonWriter.writeString(locale.toLanguageTag());
-  }
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Locale locale) throws IOException {
+        jsonWriter.writeString(locale.toLanguageTag());
+    }
 
-  @Override
-  public Locale readObject(JsonReader reader, JavaType<? extends Locale> type) throws IOException {
-    return Locale.forLanguageTag(reader.readString());
-  }
+    @Override
+    public Locale readObject(JsonReader reader, JavaType<? extends Locale> type) throws IOException {
+        return Locale.forLanguageTag(reader.readString());
+    }
 
 }

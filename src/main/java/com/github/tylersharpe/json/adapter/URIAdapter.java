@@ -10,27 +10,28 @@ import java.net.URISyntaxException;
 
 public class URIAdapter implements JsonAdapter<URI> {
 
-  private static final JsonAdapter<URI> INSTANCE = new URIAdapter().nullSafe();
+    private static final JsonAdapter<URI> INSTANCE = new URIAdapter().nullSafe();
 
-  private URIAdapter() {}
-
-  public static JsonAdapter<URI> getInstance() {
-    return INSTANCE;
-  }
-
-  @Override
-  public void writeObject(JsonWriter jsonWriter, URI uri) throws IOException {
-    jsonWriter.writeString(uri.toString());
-  }
-
-  @Override
-  public URI readObject(JsonReader jsonReader, JavaType<? extends URI> type) throws IOException {
-    String nextString = jsonReader.readString();
-    try {
-      return new URI(nextString);
-    } catch (URISyntaxException e) {
-      throw jsonReader.createJsonBindException("Could not parse URI from '" + nextString + "'", e);
+    private URIAdapter() {
     }
-  }
+
+    public static JsonAdapter<URI> getInstance() {
+        return INSTANCE;
+    }
+
+    @Override
+    public void writeObject(JsonWriter jsonWriter, URI uri) throws IOException {
+        jsonWriter.writeString(uri.toString());
+    }
+
+    @Override
+    public URI readObject(JsonReader jsonReader, JavaType<? extends URI> type) throws IOException {
+        String nextString = jsonReader.readString();
+        try {
+            return new URI(nextString);
+        } catch (URISyntaxException e) {
+            throw jsonReader.createJsonBindException("Could not parse URI from '" + nextString + "'", e);
+        }
+    }
 
 }

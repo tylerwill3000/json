@@ -12,39 +12,39 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class FieldBuilder<T> implements ObjectBuilder<T> {
 
-  private T instance;
+    private T instance;
 
-  FieldBuilder(Class<? extends T> clazz) {
-    try {
-      this.instance = clazz.getDeclaredConstructor().newInstance();
-    } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-      throw new JsonBindException(e);
-    }
-  }
-
-  @Override
-  public void accumulateField(JsonReader reader) throws IOException {
-    String jsonProperty = reader.readKey();
-    Field field = ObjectBuilder.findFieldForJsonProperty(instance.getClass(), jsonProperty);
-
-    if (field == null) {
-      reader.readClass(Object.class);
-      return;
+    FieldBuilder(Class<? extends T> clazz) {
+        try {
+            this.instance = clazz.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new JsonBindException(e);
+        }
     }
 
-    Object fieldValue = ObjectBuilder.readFieldValue(reader, field);
+    @Override
+    public void accumulateField(JsonReader reader) throws IOException {
+        String jsonProperty = reader.readKey();
+        Field field = ObjectBuilder.findFieldForJsonProperty(instance.getClass(), jsonProperty);
 
-    field.setAccessible(true);
-    try {
-      field.set(instance, fieldValue);
-    } catch (IllegalAccessException e) {
-      throw new JsonBindException(e);
+        if (field == null) {
+            reader.readClass(Object.class);
+            return;
+        }
+
+        Object fieldValue = ObjectBuilder.readFieldValue(reader, field);
+
+        field.setAccessible(true);
+        try {
+            field.set(instance, fieldValue);
+        } catch (IllegalAccessException e) {
+            throw new JsonBindException(e);
+        }
     }
-  }
 
-  @Override
-  public T buildObject() {
-    return instance;
-  }
+    @Override
+    public T buildObject() {
+        return instance;
+    }
 
 }

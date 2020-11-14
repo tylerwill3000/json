@@ -14,25 +14,26 @@ import java.util.Date;
  */
 public class CalendarAdapter implements JsonAdapter<Calendar> {
 
-  private static final JsonAdapter<Calendar> INSTANCE = new CalendarAdapter().nullSafe();
+    private static final JsonAdapter<Calendar> INSTANCE = new CalendarAdapter().nullSafe();
 
-  private CalendarAdapter() {}
+    private CalendarAdapter() {
+    }
 
-  public static JsonAdapter<Calendar> getInstance() {
-    return INSTANCE;
-  }
+    public static JsonAdapter<Calendar> getInstance() {
+        return INSTANCE;
+    }
 
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Calendar calendar) throws IOException {
-    jsonWriter.writeValue(calendar.getTime());
-  }
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Calendar calendar) throws IOException {
+        jsonWriter.writeValue(calendar.getTime());
+    }
 
-  @Override
-  public Calendar readObject(JsonReader reader, JavaType<? extends Calendar> type) throws IOException {
-    Date date = reader.readClass(Date.class);
-    Calendar cal = Calendar.getInstance();
-    cal.setTime(date);
-    return cal;
-  }
+    @Override
+    public Calendar readObject(JsonReader reader, JavaType<? extends Calendar> type) throws IOException {
+        Date date = reader.readClass(Date.class);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        return cal;
+    }
 
 }

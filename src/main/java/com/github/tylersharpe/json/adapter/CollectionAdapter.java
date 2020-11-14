@@ -14,56 +14,57 @@ import java.util.*;
 @SuppressWarnings("rawtypes")
 public class CollectionAdapter implements JsonAdapter<Collection> {
 
-  private static final JsonAdapter<Collection> INSTANCE = new CollectionAdapter().nullSafe();
+    private static final JsonAdapter<Collection> INSTANCE = new CollectionAdapter().nullSafe();
 
-  private CollectionAdapter() {}
-
-  public static JsonAdapter<Collection> getInstance() {
-    return INSTANCE;
-  }
-
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Collection collection) throws IOException {
-    jsonWriter.writeStartArray(collection);
-    for (var item : collection) {
-      jsonWriter.writeValue(item);
-    }
-    jsonWriter.writeEndArray();
-  }
-
-  @Override
-  @SuppressWarnings("unchecked")
-  public Collection readObject(JsonReader reader, JavaType<? extends Collection> collectionType) throws IOException {
-    Type itemType = collectionType.getGenericType(0)
-            .map(type -> type instanceof WildcardType ? JavaType.parseBoundType((WildcardType) type) : type)
-            .orElse(Object.class);
-
-    var collection = instantiateCollection(collectionType.getRawType());
-    reader.iterateNextArray(() -> collection.add(reader.readType(itemType)));
-    return collection;
-  }
-
-  private Collection instantiateCollection(Class<? extends Collection> clazz) {
-    if (!clazz.isInterface()) {
-      try {
-        return clazz.getDeclaredConstructor().newInstance();
-      } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-        throw new JsonBindException(e);
-      }
+    private CollectionAdapter() {
     }
 
-    if (SortedSet.class.isAssignableFrom(clazz)) {
-      return new TreeSet();
-    } else if (Set.class.isAssignableFrom(clazz)) {
-      return new HashSet();
-    } else if (Queue.class.isAssignableFrom(clazz)) {
-      return new ArrayDeque();
+    public static JsonAdapter<Collection> getInstance() {
+        return INSTANCE;
     }
 
-    if (!clazz.isAssignableFrom(ArrayList.class)) {
-      throw new JsonBindException("Unknown collection type: " + clazz);
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Collection collection) throws IOException {
+        jsonWriter.writeStartArray(collection);
+        for (var item : collection) {
+            jsonWriter.writeValue(item);
+        }
+        jsonWriter.writeEndArray();
     }
-    return new ArrayList();
-  }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Collection readObject(JsonReader reader, JavaType<? extends Collection> collectionType) throws IOException {
+        Type itemType = collectionType.getGenericType(0)
+                .map(type -> type instanceof WildcardType ? JavaType.parseBoundType((WildcardType) type) : type)
+                .orElse(Object.class);
+
+        var collection = instantiateCollection(collectionType.getRawType());
+        reader.iterateNextArray(() -> collection.add(reader.readType(itemType)));
+        return collection;
+    }
+
+    private Collection instantiateCollection(Class<? extends Collection> clazz) {
+        if (!clazz.isInterface()) {
+            try {
+                return clazz.getDeclaredConstructor().newInstance();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                throw new JsonBindException(e);
+            }
+        }
+
+        if (SortedSet.class.isAssignableFrom(clazz)) {
+            return new TreeSet();
+        } else if (Set.class.isAssignableFrom(clazz)) {
+            return new HashSet();
+        } else if (Queue.class.isAssignableFrom(clazz)) {
+            return new ArrayDeque();
+        }
+
+        if (!clazz.isAssignableFrom(ArrayList.class)) {
+            throw new JsonBindException("Unknown collection type: " + clazz);
+        }
+        return new ArrayList();
+    }
 
 }

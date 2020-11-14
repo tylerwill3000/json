@@ -7,12 +7,12 @@ import com.github.tylersharpe.json.adapter.JsonAdapter;
  */
 public interface SerializationContext {
 
-  boolean isSerializeNulls();
+    boolean isSerializeNulls();
 
-  boolean isAllowComments();
+    boolean isAllowComments();
 
-  WhitespaceWriter getWhitespaceWriter();
+    WhitespaceWriter getWhitespaceWriter();
 
-  <T> JsonAdapter<? super T> getAdapter(Class<T> klass);
+    <T> JsonAdapter<? super T> getAdapter(Class<T> klass);
 
 }

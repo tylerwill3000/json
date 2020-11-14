@@ -14,6 +14,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JsonSerialization {
 
-  Class<? extends JsonAdapter<?>> value();
+    Class<? extends JsonAdapter<?>> value();
 
 }

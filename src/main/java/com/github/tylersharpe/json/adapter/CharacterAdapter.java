@@ -8,22 +8,23 @@ import java.io.IOException;
 
 public class CharacterAdapter implements JsonAdapter<Character> {
 
-  private static final JsonAdapter<Character> INSTANCE = new CharacterAdapter().nullSafe();
+    private static final JsonAdapter<Character> INSTANCE = new CharacterAdapter().nullSafe();
 
-  private CharacterAdapter() {}
+    private CharacterAdapter() {
+    }
 
-  public static JsonAdapter<Character> getInstance() {
-    return INSTANCE;
-  }
+    public static JsonAdapter<Character> getInstance() {
+        return INSTANCE;
+    }
 
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Character c) throws IOException {
-    jsonWriter.writeString(Character.toString(c));
-  }
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Character c) throws IOException {
+        jsonWriter.writeString(Character.toString(c));
+    }
 
-  @Override
-  public Character readObject(JsonReader jsonReader, JavaType<? extends Character> type) throws IOException {
-    return jsonReader.readString().charAt(0);
-  }
+    @Override
+    public Character readObject(JsonReader jsonReader, JavaType<? extends Character> type) throws IOException {
+        return jsonReader.readString().charAt(0);
+    }
 
 }

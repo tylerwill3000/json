@@ -9,8 +9,8 @@ import java.lang.reflect.Type;
 @SuppressWarnings("unused")
 public class TypeToken<T> {
 
-  public Type getType() {
-    return ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
-  }
+    public Type getType() {
+        return ((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+    }
 
 }

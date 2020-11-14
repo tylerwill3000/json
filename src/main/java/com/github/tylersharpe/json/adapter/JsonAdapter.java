@@ -13,32 +13,32 @@ import static com.github.tylersharpe.json.JsonToken.NULL;
  */
 public interface JsonAdapter<T> {
 
-  void writeObject(JsonWriter jsonWriter, T obj) throws IOException;
+    void writeObject(JsonWriter jsonWriter, T obj) throws IOException;
 
-  T readObject(JsonReader jsonReader, JavaType<? extends T> type) throws IOException;
+    T readObject(JsonReader jsonReader, JavaType<? extends T> type) throws IOException;
 
-  default JsonAdapter<T> nullSafe() {
-    JsonAdapter<T> wrapped = this;
+    default JsonAdapter<T> nullSafe() {
+        JsonAdapter<T> wrapped = this;
 
-    return new JsonAdapter<>() {
-      @Override
-      public void writeObject(JsonWriter jsonWriter, T obj) throws IOException {
-        if (obj == null) {
-          jsonWriter.writeNull();
-        } else {
-          wrapped.writeObject(jsonWriter, obj);
-        }
-      }
+        return new JsonAdapter<>() {
+            @Override
+            public void writeObject(JsonWriter jsonWriter, T obj) throws IOException {
+                if (obj == null) {
+                    jsonWriter.writeNull();
+                } else {
+                    wrapped.writeObject(jsonWriter, obj);
+                }
+            }
 
-      @Override
-      public T readObject(JsonReader reader, JavaType<? extends T> type) throws IOException {
-        if (reader.peek() == NULL) {
-          reader.readNull();
-          return null;
-        }
-        return wrapped.readObject(reader, type);
-      }
-    };
-  }
+            @Override
+            public T readObject(JsonReader reader, JavaType<? extends T> type) throws IOException {
+                if (reader.peek() == NULL) {
+                    reader.readNull();
+                    return null;
+                }
+                return wrapped.readObject(reader, type);
+            }
+        };
+    }
 
 }

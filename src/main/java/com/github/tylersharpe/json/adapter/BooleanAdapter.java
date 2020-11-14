@@ -8,22 +8,23 @@ import java.io.IOException;
 
 public class BooleanAdapter implements JsonAdapter<Boolean> {
 
-  private static final JsonAdapter<Boolean> INSTANCE = new BooleanAdapter().nullSafe();
+    private static final JsonAdapter<Boolean> INSTANCE = new BooleanAdapter().nullSafe();
 
-  private BooleanAdapter() {}
+    private BooleanAdapter() {
+    }
 
-  public static JsonAdapter<Boolean> getInstance() {
-    return INSTANCE;
-  }
+    public static JsonAdapter<Boolean> getInstance() {
+        return INSTANCE;
+    }
 
-  @Override
-  public void writeObject(JsonWriter jsonWriter, Boolean bool) throws IOException {
-    jsonWriter.writeBoolean(bool);
-  }
+    @Override
+    public void writeObject(JsonWriter jsonWriter, Boolean bool) throws IOException {
+        jsonWriter.writeBoolean(bool);
+    }
 
-  @Override
-  public Boolean readObject(JsonReader jsonReader, JavaType<? extends Boolean> type) throws IOException {
-    return jsonReader.readBoolean();
-  }
+    @Override
+    public Boolean readObject(JsonReader jsonReader, JavaType<? extends Boolean> type) throws IOException {
+        return jsonReader.readBoolean();
+    }
 
 }

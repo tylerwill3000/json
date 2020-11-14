@@ -25,63 +25,64 @@ import java.util.stream.Stream;
 @SuppressWarnings({"unchecked", "rawtypes"})
 public interface ObjectBuilder<T> {
 
-  Map<Class, Supplier<ObjectBuilder>> OBJECT_BUILDER_CACHE = new HashMap<>();
+    Map<Class, Supplier<ObjectBuilder>> OBJECT_BUILDER_CACHE = new HashMap<>();
 
-  /**
-   * Accumulate a field value from the next object / array entry
-   */
-  void accumulateField(JsonReader reader) throws IOException;
+    /**
+     * Accumulate a field value from the next object / array entry
+     */
+    void accumulateField(JsonReader reader) throws IOException;
 
-  /**
-   * @return The built object after having visited all entries in the upcoming array / object
-   */
-  T buildObject();
+    /**
+     * @return The built object after having visited all entries in the upcoming array / object
+     */
+    T buildObject();
 
-  static <T> ObjectBuilder<T> newObjectBuilder(Class<T> klass) {
-    if (klass.isInterface() || Modifier.isAbstract(klass.getModifiers())) {
-      throw new JsonBindException(
-          "Cannot directly instantiate " + klass + " since it is an abstract class or an interface. " +
-          "If you intend to deserialize instances of this type, consider using " + TypeMetadataAdapter.class.getName()
-      );
-    }
-
-    Supplier<ObjectBuilder> builderSupplier = OBJECT_BUILDER_CACHE.computeIfAbsent(klass, rawType -> {
-      for (var constructor : rawType.getDeclaredConstructors()) {
-        if (constructor.isAnnotationPresent(JsonConstructor.class)) {
-          return () -> new ConstructorBuilder(constructor);
+    static <T> ObjectBuilder<T> newObjectBuilder(Class<T> klass) {
+        if (klass.isInterface() || Modifier.isAbstract(klass.getModifiers())) {
+            throw new JsonBindException(
+                "Cannot directly instantiate " + klass + " since it is an abstract class or an interface. " +
+                "If you intend to deserialize instances of this type, consider using " + TypeMetadataAdapter.class.getName()
+            );
         }
-      }
-      return () -> new FieldBuilder(rawType);
-    });
 
-    return (ObjectBuilder<T>) builderSupplier.get();
-  }
-
-  static Object readFieldValue(JsonReader reader, Field field) throws IOException {
-    if (field.isAnnotationPresent(JsonSerialization.class)) {
-      var adapterClass = field.getAnnotation(JsonSerialization.class).value();
-      JsonAdapter jsonAdapter = SingletonCache.getInstance(adapterClass);
-      return jsonAdapter.readObject(reader, JavaType.from(field.getGenericType()));
-    } else {
-      return reader.readType(field.getGenericType());
-    }
-  }
-
-  static Field findFieldForJsonProperty(Class clazz, String jsonProperty) {
-    try {
-      return clazz.getDeclaredField(jsonProperty);
-    } catch (NoSuchFieldException ignore) {
-      return Stream.of(clazz.getDeclaredFields())
-          .filter(field -> field.isAnnotationPresent(JsonProperty.class) &&
-                           field.getDeclaredAnnotation(JsonProperty.class).value().equals(jsonProperty))
-          .findFirst()
-          .orElseGet(() -> {
-            if (clazz.isAnnotationPresent(JsonIgnoreExtraFields.class)) {
-              return null;
+        Supplier<ObjectBuilder> builderSupplier = OBJECT_BUILDER_CACHE.computeIfAbsent(klass, rawType -> {
+            for (var constructor : rawType.getDeclaredConstructors()) {
+                if (constructor.isAnnotationPresent(JsonConstructor.class)) {
+                    return () -> new ConstructorBuilder(constructor);
+                }
             }
-            throw new JsonBindException("Cannot find field in " + clazz + " to bind json property '" + jsonProperty + "' to");
-          });
+            return () -> new FieldBuilder(rawType);
+        });
+
+        return (ObjectBuilder<T>) builderSupplier.get();
     }
-  }
+
+    static Object readFieldValue(JsonReader reader, Field field) throws IOException {
+        if (field.isAnnotationPresent(JsonSerialization.class)) {
+            var adapterClass = field.getAnnotation(JsonSerialization.class).value();
+            JsonAdapter jsonAdapter = SingletonCache.getInstance(adapterClass);
+            return jsonAdapter.readObject(reader, JavaType.from(field.getGenericType()));
+        } else {
+            return reader.readType(field.getGenericType());
+        }
+    }
+
+    static Field findFieldForJsonProperty(Class clazz, String jsonProperty) {
+        try {
+            return clazz.getDeclaredField(jsonProperty);
+        } catch (NoSuchFieldException ignore) {
+            return Stream.of(clazz.getDeclaredFields())
+                    .filter(field ->
+                        field.isAnnotationPresent(JsonProperty.class) && field.getDeclaredAnnotation(JsonProperty.class).value().equals(jsonProperty)
+                    )
+                    .findFirst()
+                    .orElseGet(() -> {
+                        if (clazz.isAnnotationPresent(JsonIgnoreExtraFields.class)) {
+                            return null;
+                        }
+                        throw new JsonBindException("Cannot find field in " + clazz + " to bind json property '" + jsonProperty + "' to");
+                    });
+        }
+    }
 
 }
