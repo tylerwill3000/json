@@ -19,8 +19,8 @@ public class UUIDAdapter implements JsonAdapter<UUID> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, UUID uuid) throws IOException {
-        jsonWriter.writeString(uuid.toString());
+    public void writeObject(JsonWriter writer, UUID uuid) throws IOException {
+        writer.writeString(uuid.toString());
     }
 
     @Override

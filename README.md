@@ -104,7 +104,7 @@ var json = new Json();
 json.registerAdapter(Person.class, new JsonAdapter<>() {
   
    @Override
-   public void writeObject(JsonWriter jsonWriter, Person person) throws IOException {
+   public void writeObject(JsonWriter writer, Person person) throws IOException {
      jsonWriter.writeString(person.name + "|" + person.age);
    }
 

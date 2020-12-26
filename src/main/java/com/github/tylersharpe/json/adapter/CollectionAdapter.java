@@ -24,12 +24,12 @@ public class CollectionAdapter implements JsonAdapter<Collection> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Collection collection) throws IOException {
-        jsonWriter.writeStartArray(collection);
+    public void writeObject(JsonWriter writer, Collection collection) throws IOException {
+        writer.writeStartArray(collection);
         for (var item : collection) {
-            jsonWriter.writeValue(item);
+            writer.writeValue(item);
         }
-        jsonWriter.writeEndArray();
+        writer.writeEndArray();
     }
 
     @Override
@@ -40,7 +40,10 @@ public class CollectionAdapter implements JsonAdapter<Collection> {
                 .orElse(Object.class);
 
         var collection = instantiateCollection(collectionType.getRawType());
-        reader.iterateNextArray(() -> collection.add(reader.readType(itemType)));
+        reader.iterateNextArray(() -> {
+            var deserializedItem = reader.readType(itemType);
+            collection.add(deserializedItem);
+        });
         return collection;
     }
 

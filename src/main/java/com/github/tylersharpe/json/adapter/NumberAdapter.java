@@ -21,8 +21,8 @@ public class NumberAdapter implements JsonAdapter<Number> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Number obj) throws IOException {
-        jsonWriter.writeNumber(obj);
+    public void writeObject(JsonWriter writer, Number obj) throws IOException {
+        writer.writeNumber(obj);
     }
 
     @Override

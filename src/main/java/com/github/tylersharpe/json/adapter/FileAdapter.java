@@ -19,8 +19,8 @@ public class FileAdapter implements JsonAdapter<File> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, File file) throws IOException {
-        jsonWriter.writeString(file.getAbsolutePath());
+    public void writeObject(JsonWriter writer, File file) throws IOException {
+        writer.writeString(file.getAbsolutePath());
     }
 
     @Override

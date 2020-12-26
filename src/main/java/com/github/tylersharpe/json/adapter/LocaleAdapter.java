@@ -19,8 +19,8 @@ public class LocaleAdapter implements JsonAdapter<Locale> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Locale locale) throws IOException {
-        jsonWriter.writeString(locale.toLanguageTag());
+    public void writeObject(JsonWriter writer, Locale locale) throws IOException {
+        writer.writeString(locale.toLanguageTag());
     }
 
     @Override

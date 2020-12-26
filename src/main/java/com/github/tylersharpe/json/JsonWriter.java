@@ -44,7 +44,7 @@ public class JsonWriter implements Closeable, Flushable {
         writeValue(obj, obj == null ? Object.class : obj.getClass());
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public void writeValue(Object obj, Type objType) throws IOException {
         Class rawType = objType instanceof Class ? (Class) objType : JavaType.from(objType).getRawType();
 

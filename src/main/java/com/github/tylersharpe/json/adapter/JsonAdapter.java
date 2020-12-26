@@ -13,7 +13,7 @@ import static com.github.tylersharpe.json.JsonToken.NULL;
  */
 public interface JsonAdapter<T> {
 
-    void writeObject(JsonWriter jsonWriter, T obj) throws IOException;
+    void writeObject(JsonWriter writer, T obj) throws IOException;
 
     T readObject(JsonReader jsonReader, JavaType<? extends T> type) throws IOException;
 
@@ -22,11 +22,11 @@ public interface JsonAdapter<T> {
 
         return new JsonAdapter<>() {
             @Override
-            public void writeObject(JsonWriter jsonWriter, T obj) throws IOException {
+            public void writeObject(JsonWriter writer, T obj) throws IOException {
                 if (obj == null) {
-                    jsonWriter.writeNull();
+                    writer.writeNull();
                 } else {
-                    wrapped.writeObject(jsonWriter, obj);
+                    wrapped.writeObject(writer, obj);
                 }
             }
 

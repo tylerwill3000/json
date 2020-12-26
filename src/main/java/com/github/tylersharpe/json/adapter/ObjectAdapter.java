@@ -30,8 +30,8 @@ public class ObjectAdapter implements JsonAdapter<Object> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Object obj) throws IOException {
-        jsonWriter.writeStartObject(obj);
+    public void writeObject(JsonWriter writer, Object obj) throws IOException {
+        writer.writeStartObject(obj);
 
         for (Class clazz = obj.getClass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
             for (Field field : clazz.getDeclaredFields()) {
@@ -51,24 +51,24 @@ public class ObjectAdapter implements JsonAdapter<Object> {
                     throw new JsonBindException(e);
                 }
 
-                if (fieldValue == null && !jsonWriter.getSerializationContext().isSerializeNulls()) {
+                if (fieldValue == null && !writer.getSerializationContext().isSerializeNulls()) {
                     continue;
                 }
 
                 String fieldName = field.isAnnotationPresent(JsonProperty.class) ? field.getDeclaredAnnotation(JsonProperty.class).value() : field.getName();
-                jsonWriter.writeKey(fieldName);
+                writer.writeKey(fieldName);
 
                 JsonSerialization jsonSerialization = field.getAnnotation(JsonSerialization.class);
                 if (jsonSerialization != null) {
                     JsonAdapter jsonAdapter = SingletonCache.getInstance(jsonSerialization.value());
-                    jsonAdapter.writeObject(jsonWriter, fieldValue);
+                    jsonAdapter.writeObject(writer, fieldValue);
                 } else {
-                    jsonWriter.writeValue(fieldValue, field.getGenericType());
+                    writer.writeValue(fieldValue, field.getGenericType());
                 }
             }
         }
 
-        jsonWriter.writeEndObject();
+        writer.writeEndObject();
     }
 
     @Override

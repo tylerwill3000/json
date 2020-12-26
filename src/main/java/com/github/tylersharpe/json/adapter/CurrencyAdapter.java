@@ -19,8 +19,8 @@ public class CurrencyAdapter implements JsonAdapter<Currency> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Currency currency) throws IOException {
-        jsonWriter.writeString(currency.getCurrencyCode());
+    public void writeObject(JsonWriter writer, Currency currency) throws IOException {
+        writer.writeString(currency.getCurrencyCode());
     }
 
     @Override

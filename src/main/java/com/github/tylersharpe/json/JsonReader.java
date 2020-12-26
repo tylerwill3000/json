@@ -10,7 +10,6 @@ import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -18,8 +17,10 @@ import static com.github.tylersharpe.json.JsonToken.*;
 
 public class JsonReader implements Closeable {
 
-    private static final Set<Character> LITERAL_STOPS = Set.of(',', ']', '}');
-    private static final Set<Character> QUOTE_STOP = Collections.singleton('"');
+    private static final Set<Character> LITERAL_STOPS = Set.of(
+            COMMA.character, END_ARRAY.character, END_OBJECT.character);
+
+    private static final Set<Character> QUOTE_STOP = Set.of(QUOTE.character);
 
     private StopSequenceReader reader;
     private JsonToken lastTokenRead;
@@ -27,8 +28,8 @@ public class JsonReader implements Closeable {
 
     JsonReader(InputStream inputStream, SerializationContext serializationContext) {
         this.reader = new StopSequenceReader(
-                new BufferedReader(
-                        new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+                        new BufferedReader(
+                          new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
         this.serializationContext = serializationContext;
     }
 
@@ -53,7 +54,7 @@ public class JsonReader implements Closeable {
         return (T) readType(bindClass);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Object readType(Type bindType) throws IOException {
         readCommaIfNeeded();
 
@@ -130,14 +131,15 @@ public class JsonReader implements Closeable {
     public boolean readBoolean() throws IOException {
         String literal = readLiteral();
         switch (literal) {
-            case "true":
+            case "true" -> {
                 lastTokenRead = TRUE;
                 return true;
-            case "false":
+            }
+            case "false" -> {
                 lastTokenRead = FALSE;
                 return false;
-            default:
-                throw createJsonBindException("Expected boolean but instead found sequence '" + literal + "'");
+            }
+            default -> throw createJsonBindException("Expected boolean but instead found sequence '" + literal + "'");
         }
     }
 
@@ -242,14 +244,9 @@ public class JsonReader implements Closeable {
             reader.nextCharacter(); // Burn '/'
             char commentType = reader.peek();
             switch (commentType) {
-                case '/':
-                    reader.readUntil("\n");
-                    break;
-                case '*':
-                    reader.readUntil("*/");
-                    break;
-                default:
-                    throw createMalformedJsonException("Cannot parse a comment starting from '/" + commentType + "'");
+                case '/' -> reader.readUntil("\n");
+                case '*' -> reader.readUntil("*/");
+                default -> throw createMalformedJsonException("Cannot parse a comment starting from '/" + commentType + "'");
             }
 
             consumeWhitespaceAndComments(); // In case there are more comment lines

@@ -1,7 +1,7 @@
 package com.github.tylersharpe.json;
 
 class JsonContext {
-    enum Type {OBJECT, ARRAY}
+    enum Type { OBJECT, ARRAY }
 
     final Type type;
     boolean hasEntries;

@@ -1,4 +1,3 @@
-
 plugins {
   id 'java'
   id 'java-library'
@@ -20,4 +19,4 @@ dependencies {
   testImplementation 'org.spockframework:spock-core:1.3-groovy-2.5'
 }
 
-wrapper.gradleVersion = '6.3'
+wrapper.gradleVersion = '6.7.1'

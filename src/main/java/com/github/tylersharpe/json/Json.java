@@ -99,9 +99,9 @@ public class Json implements SerializationContext {
     }
 
     public void serialize(Object obj, OutputStream out) throws IOException {
-        var jsonWriter = new JsonWriter(out, this);
-        jsonWriter.writeValue(obj);
-        jsonWriter.flush();
+        var writer = new JsonWriter(out, this);
+        writer.writeValue(obj);
+        writer.flush();
     }
 
 }

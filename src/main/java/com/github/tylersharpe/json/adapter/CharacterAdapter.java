@@ -18,8 +18,8 @@ public class CharacterAdapter implements JsonAdapter<Character> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Character c) throws IOException {
-        jsonWriter.writeString(Character.toString(c));
+    public void writeObject(JsonWriter writer, Character c) throws IOException {
+        writer.writeString(Character.toString(c));
     }
 
     @Override

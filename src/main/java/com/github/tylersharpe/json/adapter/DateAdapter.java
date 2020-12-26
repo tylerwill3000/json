@@ -20,8 +20,8 @@ public class DateAdapter implements JsonAdapter<Date> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Date date) throws IOException {
-        jsonWriter.writeString(new SimpleDateFormat(dateFormat).format(date));
+    public void writeObject(JsonWriter writer, Date date) throws IOException {
+        writer.writeString(new SimpleDateFormat(dateFormat).format(date));
     }
 
     @Override

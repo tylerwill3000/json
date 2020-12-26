@@ -19,8 +19,8 @@ public class EnumAdapter implements JsonAdapter<Enum> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Enum enumMember) throws IOException {
-        jsonWriter.writeString(enumMember.name());
+    public void writeObject(JsonWriter writer, Enum enumMember) throws IOException {
+        writer.writeString(enumMember.name());
     }
 
     @Override

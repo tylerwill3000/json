@@ -21,16 +21,16 @@ public class ArrayAdapter implements JsonAdapter<Object> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Object array) throws IOException {
-        jsonWriter.writeStartArray();
+    public void writeObject(JsonWriter writer, Object array) throws IOException {
+        writer.writeStartArray();
 
         int length = Array.getLength(array);
         for (int i = 0; i < length; i++) {
             Object arrayItem = Array.get(array, i);
-            jsonWriter.writeValue(arrayItem);
+            writer.writeValue(arrayItem);
         }
 
-        jsonWriter.writeEndArray();
+        writer.writeEndArray();
     }
 
     @Override
@@ -39,7 +39,10 @@ public class ArrayAdapter implements JsonAdapter<Object> {
         Class arrayItemType = type.getRawType().getComponentType();
 
         List list = new ArrayList();
-        reader.iterateNextArray(() -> list.add(reader.readClass(arrayItemType)));
+        reader.iterateNextArray(() -> {
+            var deserializedItem = reader.readClass(arrayItemType);
+            list.add(deserializedItem);
+        });
 
         var array = Array.newInstance(arrayItemType, list.size());
         if (arrayItemType.isPrimitive()) {

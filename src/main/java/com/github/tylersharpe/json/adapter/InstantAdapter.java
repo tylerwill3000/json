@@ -19,8 +19,8 @@ public class InstantAdapter implements JsonAdapter<Instant> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Instant instant) throws IOException {
-        jsonWriter.writeLong(instant.toEpochMilli());
+    public void writeObject(JsonWriter writer, Instant instant) throws IOException {
+        writer.writeLong(instant.toEpochMilli());
     }
 
     @Override

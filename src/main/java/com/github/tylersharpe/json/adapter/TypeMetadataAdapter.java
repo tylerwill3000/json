@@ -20,23 +20,23 @@ public class TypeMetadataAdapter implements JsonAdapter<Object> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Object obj) throws IOException {
+    public void writeObject(JsonWriter writer, Object obj) throws IOException {
         if (obj == null) {
-            jsonWriter.writeNull();
+            writer.writeNull();
             return;
         }
 
-        jsonWriter.writeStartArray();
+        writer.writeStartArray();
 
-        jsonWriter.writeString(obj.getClass().getName());
+        writer.writeString(obj.getClass().getName());
 
-        JsonAdapter implAdapter = jsonWriter.getSerializationContext().getAdapter(obj.getClass());
+        JsonAdapter implAdapter = writer.getSerializationContext().getAdapter(obj.getClass());
         if (implAdapter instanceof TypeMetadataAdapter) {
             implAdapter = ObjectAdapter.getInstance();
         }
-        implAdapter.writeObject(jsonWriter, obj);
+        implAdapter.writeObject(writer, obj);
 
-        jsonWriter.writeEndArray();
+        writer.writeEndArray();
     }
 
     @Override

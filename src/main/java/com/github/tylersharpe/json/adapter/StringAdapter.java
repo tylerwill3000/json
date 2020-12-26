@@ -18,8 +18,8 @@ public class StringAdapter implements JsonAdapter<String> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, String str) throws IOException {
-        jsonWriter.writeString(str);
+    public void writeObject(JsonWriter writer, String str) throws IOException {
+        writer.writeString(str);
     }
 
     @Override

@@ -20,8 +20,8 @@ public class PathAdapter implements JsonAdapter<Path> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Path path) throws IOException {
-        jsonWriter.writeString(path.toAbsolutePath().toString());
+    public void writeObject(JsonWriter writer, Path path) throws IOException {
+        writer.writeString(path.toAbsolutePath().toString());
     }
 
     @Override

@@ -19,8 +19,8 @@ public class InetAddressAdapter implements JsonAdapter<InetAddress> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, InetAddress inetAddress) throws IOException {
-        jsonWriter.writeString(inetAddress.toString());
+    public void writeObject(JsonWriter writer, InetAddress inetAddress) throws IOException {
+        writer.writeString(inetAddress.toString());
     }
 
     @Override

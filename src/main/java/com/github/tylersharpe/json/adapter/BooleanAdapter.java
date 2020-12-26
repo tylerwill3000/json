@@ -18,8 +18,8 @@ public class BooleanAdapter implements JsonAdapter<Boolean> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Boolean bool) throws IOException {
-        jsonWriter.writeBoolean(bool);
+    public void writeObject(JsonWriter writer, Boolean bool) throws IOException {
+        writer.writeBoolean(bool);
     }
 
     @Override

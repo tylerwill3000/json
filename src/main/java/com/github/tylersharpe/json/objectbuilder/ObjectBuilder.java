@@ -72,16 +72,16 @@ public interface ObjectBuilder<T> {
             return clazz.getDeclaredField(jsonProperty);
         } catch (NoSuchFieldException ignore) {
             return Stream.of(clazz.getDeclaredFields())
-                    .filter(field ->
-                        field.isAnnotationPresent(JsonProperty.class) && field.getDeclaredAnnotation(JsonProperty.class).value().equals(jsonProperty)
-                    )
-                    .findFirst()
-                    .orElseGet(() -> {
-                        if (clazz.isAnnotationPresent(JsonIgnoreExtraFields.class)) {
-                            return null;
-                        }
-                        throw new JsonBindException("Cannot find field in " + clazz + " to bind json property '" + jsonProperty + "' to");
-                    });
+                .filter(field ->
+                    field.isAnnotationPresent(JsonProperty.class) && field.getDeclaredAnnotation(JsonProperty.class).value().equals(jsonProperty)
+                )
+                .findFirst()
+                .orElseGet(() -> {
+                    if (clazz.isAnnotationPresent(JsonIgnoreExtraFields.class)) {
+                        return null;
+                    }
+                    throw new JsonBindException("Cannot find field in " + clazz + " to bind json property '" + jsonProperty + "' to");
+                });
         }
     }
 

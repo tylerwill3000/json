@@ -51,8 +51,8 @@ class TypeMetadataAdapterSpec extends Specification {
             json.registerAdapter(MyInterface, TypeMetadataAdapter.instance)
             json.registerAdapter(MyImplC, new JsonAdapter<MyImplC>() {
                 @Override
-                void writeObject(JsonWriter jsonWriter, MyImplC obj) throws IOException {
-                    jsonWriter.writeString("custom:${obj.name}")
+                void writeObject(JsonWriter writer, MyImplC obj) throws IOException {
+                    writer.writeString("custom:${obj.name}")
                 }
 
                 @Override

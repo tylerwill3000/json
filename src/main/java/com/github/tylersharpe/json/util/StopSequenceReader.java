@@ -29,6 +29,7 @@ public class StopSequenceReader implements Closeable {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
     public char peekNextUpcomingOnly() throws IOException {
         if (backReadQueue.isEmpty()) {
             peek();

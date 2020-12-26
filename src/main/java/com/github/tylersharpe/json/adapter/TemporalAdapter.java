@@ -18,8 +18,8 @@ public class TemporalAdapter<T extends TemporalAccessor> implements JsonAdapter<
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, T temporal) throws IOException {
-        jsonWriter.writeString(formatter.format(temporal));
+    public void writeObject(JsonWriter writer, T temporal) throws IOException {
+        writer.writeString(formatter.format(temporal));
     }
 
     @Override

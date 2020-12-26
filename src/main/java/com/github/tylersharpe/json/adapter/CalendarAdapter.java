@@ -24,8 +24,8 @@ public class CalendarAdapter implements JsonAdapter<Calendar> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Calendar calendar) throws IOException {
-        jsonWriter.writeValue(calendar.getTime());
+    public void writeObject(JsonWriter writer, Calendar calendar) throws IOException {
+        writer.writeValue(calendar.getTime());
     }
 
     @Override

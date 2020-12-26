@@ -20,8 +20,8 @@ public class URIAdapter implements JsonAdapter<URI> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, URI uri) throws IOException {
-        jsonWriter.writeString(uri.toString());
+    public void writeObject(JsonWriter writer, URI uri) throws IOException {
+        writer.writeString(uri.toString());
     }
 
     @Override

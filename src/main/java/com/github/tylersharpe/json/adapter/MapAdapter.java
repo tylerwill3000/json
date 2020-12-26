@@ -25,19 +25,19 @@ public class MapAdapter implements JsonAdapter<Map> {
     }
 
     @Override
-    public void writeObject(JsonWriter jsonWriter, Map map) throws IOException {
-        jsonWriter.writeStartObject(map);
+    public void writeObject(JsonWriter writer, Map map) throws IOException {
+        writer.writeStartObject(map);
 
         map.forEach((key, value) -> {
             try {
-                jsonWriter.writeKey(key);
-                jsonWriter.writeValue(value);
+                writer.writeKey(key);
+                writer.writeValue(value);
             } catch (IOException e) {
                 throw new JsonBindException(e);
             }
         });
 
-        jsonWriter.writeEndObject();
+        writer.writeEndObject();
     }
 
     @Override

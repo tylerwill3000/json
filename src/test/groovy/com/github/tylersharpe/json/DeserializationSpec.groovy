@@ -117,8 +117,8 @@ class DeserializationSpec extends Specification {
     static class NameAdapter implements JsonAdapter<String> {
 
         @Override
-        void writeObject(JsonWriter jsonWriter, String obj) throws IOException {
-            jsonWriter.writeValue("custom:" + obj)
+        void writeObject(JsonWriter writer, String obj) throws IOException {
+            writer.writeValue("custom:" + obj)
         }
 
         @Override
