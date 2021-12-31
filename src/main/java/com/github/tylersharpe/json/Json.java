@@ -95,7 +95,7 @@ public class Json implements SerializationContext {
     public String serialize(Object obj) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         serialize(obj, out);
-        return new String(out.toByteArray(), StandardCharsets.UTF_8);
+        return out.toString(StandardCharsets.UTF_8);
     }
 
     public void serialize(Object obj, OutputStream out) throws IOException {

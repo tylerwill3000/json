@@ -31,8 +31,8 @@ public class JsonWriter implements Closeable, Flushable {
     }
 
     public void writeKey(Object key) throws IOException {
-        if (key instanceof String) {
-            writeString((String) key);
+        if (key instanceof String stringKey) {
+            writeString(stringKey);
         } else {
             writeValue(key);
         }

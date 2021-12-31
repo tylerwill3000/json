@@ -30,17 +30,16 @@ public class JavaType<C> {
     }
 
     private static JavaType create(Type type) {
-        if (type instanceof Class) {
-            return new JavaType((Class) type, List.of());
+        if (type instanceof Class classType) {
+            return new JavaType(classType, List.of());
 
-        } else if (type instanceof ParameterizedType) {
-            var paramType = ((ParameterizedType) type);
+        } else if (type instanceof ParameterizedType paramType) {
             var rawType = (Class) paramType.getRawType();
             var genericTypes = Stream.of(paramType.getActualTypeArguments()).collect(toList());
             return new JavaType(rawType, genericTypes);
 
-        } else if (type instanceof GenericArrayType) {
-            Type componentType = ((GenericArrayType) type).getGenericComponentType();
+        } else if (type instanceof GenericArrayType arrayType) {
+            Type componentType = arrayType.getGenericComponentType();
             return create(componentType);
 
         } else {
