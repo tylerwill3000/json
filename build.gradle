@@ -8,7 +8,7 @@ repositories {
   mavenCentral()
 }
 
-group 'com.github.tylersharpe'
+group 'com.github.tylerwilliams'
 version '1.0.0'
 
 dependencies {
